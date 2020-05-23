@@ -1,0 +1,58 @@
+jason.elter
+Jason Elter (318634110)
+EX: 2
+
+FILES:
+uthreads.cpp -- implementation of uthreads.h.
+Makefile -- Makefile for compiling the library.
+README -- you're reading it right now!
+
+REMARKS:
+I decided to make a thread-library class and to have the API 
+	create a singleton (single global instance) and send all class to it.
+	This helped me organize the data and ensure encapsulation.
+I also decided to have a pointer 'to_delete' that usually points to nullptr
+	but is assigned a thread whenever a thread terminates itself and then it
+	is immediately deleted when we switch threads (this prevents bugs from 
+	deleting the currently used stack).
+
+ANSWERS:
+
+Question 1:
+A use for user-level threads is handling multiple tasks seemingly 
+	simultaneously without too much overhead, while also being able
+	to access the same memory.
+For example a text-editor needs to check for keyboard input, print
+	text to the screen and do spell-checking simultaneously.
+By using user-level threads all of that can be done simultaneously 
+	on the same text (because of shared memory)without the overhead 
+	required for kernel-level threads or multiple process.
+
+Question 2:
+The advantages of multiple process over kernel-level threads in this case 
+	are that each process has its own memory and because of that it is 
+	protected from outside interference to its memory. (each tab doesn't 
+	need to know or share anything from other tabs)
+The disadvantages are that switching between process has a lot of overhead
+	so the switching is slower and that each process takes up more memory
+	than each thread.
+
+Question 3:
+Typing in the command and pressing enter causes a hardware interrupt from the 
+	keyboard to the OS, an IO interrupt is sent to the shell and it starts 
+	executing 'kill'. 'kill' sends the signal 'SIGTERM' to the program with
+	the pid that was given. The program might have a SIGTERM handler, which
+	might perform some operations before exiting the program. If it doesn't 
+	terminate after the signal then the 'SIGKILL' signal may be sent 
+	(which cannot be caught and ends the program immediately).
+
+Question 4:
+A 'real' timer is a timer that always (no matter which process is running)
+	keeps ticking(has progress), while a 'virtual' timer only ticks when 
+	while the process it was created is running (so it won't keep time 
+	during OS code or other processes are running).
+A clock should use a 'real' timer since it should always keep time
+	(if it stops during other processes then the time won't be accurate).
+A threads library should use a virtual timer for thread switching 
+	(otherwise we won't execute each thread for its set time and we might 
+	skip threads).
